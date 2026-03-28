@@ -1,65 +1,161 @@
-import Image from "next/image";
+'use client'
 
-export default function Home() {
+import { useState } from 'react'
+import { ConceptInput } from '@/components/ConceptInput'
+import { ModeSelector } from '@/components/ModeSelector'
+import { ResultsPanel } from '@/components/ResultsPanel'
+import type { GenerateResponse, InventionIdea, Mode } from '@/types'
+
+export default function HomePage() {
+  const [conceptA, setConceptA] = useState('')
+  const [conceptB, setConceptB] = useState('')
+  const [conceptC, setConceptC] = useState('')
+  const [showThird, setShowThird] = useState(false)
+  const [mode, setMode] = useState<Mode>('真面目発明')
+  const [inventions, setInventions] = useState<InventionIdea[] | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  async function handleGenerate(random = false) {
+    setIsLoading(true)
+    setError(null)
+
+    try {
+      const body = random
+        ? { random: true, mode, concepts: [] }
+        : {
+            concepts: showThird
+              ? [conceptA, conceptB, conceptC].filter(Boolean)
+              : [conceptA, conceptB].filter(Boolean),
+            mode,
+          }
+
+      if (!random && (body.concepts as string[]).length < 2) {
+        setError('概念を2つ以上入力してください')
+        setIsLoading(false)
+        return
+      }
+
+      const res = await fetch('/api/inventions/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      })
+
+      if (!res.ok) {
+        const data = await res.json()
+        setError(data.error ?? '生成に失敗しました')
+        return
+      }
+
+      const data: GenerateResponse = await res.json()
+      setInventions(data.inventions)
+    } catch {
+      setError('通信エラーが発生しました')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <main className="min-h-screen bg-lab-bg text-lab-text">
+      {/* Dot grid background */}
+      <div
+        className="fixed inset-0 pointer-events-none"
+        style={{
+          backgroundImage:
+            'radial-gradient(circle, rgba(0,255,170,0.06) 1px, transparent 1px)',
+          backgroundSize: '28px 28px',
+        }}
+      />
+
+      <div className="relative z-10 max-w-5xl mx-auto px-4 py-10 flex flex-col gap-8">
+        {/* Header */}
+        <header className="text-center">
+          <h1 className="text-4xl font-bold font-mono text-lab-accent tracking-tight">
+            SerendipityLab
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="text-lab-muted font-mono text-sm mt-2 tracking-widest">
+            — 概念衝突型発明ジェネレーター —
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+        </header>
+
+        {/* Input area */}
+        <section className="bg-lab-surface/60 border border-lab-border rounded-xl p-6 flex flex-col gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <ConceptInput
+              label="概念 A"
+              value={conceptA}
+              onChange={setConceptA}
+              placeholder="例: サウナ"
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            <ConceptInput
+              label="概念 B"
+              value={conceptB}
+              onChange={setConceptB}
+              placeholder="例: 株式"
+            />
+          </div>
+
+          {showThird && (
+            <ConceptInput
+              label="概念 C (任意)"
+              value={conceptC}
+              onChange={setConceptC}
+              placeholder="例: 記憶"
+            />
+          )}
+
+          <button
+            onClick={() => setShowThird((v) => !v)}
+            className="text-xs font-mono text-lab-muted hover:text-lab-accent transition-colors w-fit"
           >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
-  );
+            {showThird ? '− 3つ目の概念を削除' : '+ 3つ目の概念を追加'}
+          </button>
+
+          <ModeSelector value={mode} onChange={setMode} />
+
+          {error && (
+            <p className="text-red-400 text-sm font-mono bg-red-950/30 border border-red-900/50 rounded px-3 py-2">
+              {error}
+            </p>
+          )}
+
+          <div className="flex gap-3">
+            <button
+              onClick={() => handleGenerate(false)}
+              disabled={isLoading}
+              className="
+                flex-1 py-3 rounded font-mono font-bold text-sm
+                bg-lab-accent text-lab-bg
+                hover:brightness-110 active:brightness-90
+                disabled:opacity-50 disabled:cursor-not-allowed
+                transition-all duration-150
+              "
+            >
+              {isLoading ? '実験中…' : '⚗ 発明する'}
+            </button>
+            <button
+              onClick={() => handleGenerate(true)}
+              disabled={isLoading}
+              className="
+                px-5 py-3 rounded font-mono text-sm
+                border border-lab-border text-lab-muted
+                hover:border-lab-accent hover:text-lab-accent
+                disabled:opacity-50 disabled:cursor-not-allowed
+                transition-all duration-150
+              "
+            >
+              🎲 ランダム
+            </button>
+          </div>
+        </section>
+
+        {/* Results */}
+        <section>
+          <ResultsPanel inventions={inventions} isLoading={isLoading} />
+        </section>
+      </div>
+    </main>
+  )
 }
