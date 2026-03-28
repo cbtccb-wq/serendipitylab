@@ -1,0 +1,136 @@
+{
+  "_comment": "このファイルは各AIエージェントの実際の担当範囲と貢献度を記録する。役割設計はAGENTS.mdを参照。",
+  "project": "SerendipityLab",
+  "last_updated": "2026-03-28",
+  "phase": "Phase 1 MVP",
+
+  "agents": {
+    "claude": {
+      "model": "claude-sonnet-4-6",
+      "role": "仕様責任者 / 設計 / 実装 (Phase 1 MVP全域)",
+      "contribution_ratio": 1.0,
+      "status": "active",
+      "tasks_completed": [
+        {
+          "task": "仕様書レビュー・解析",
+          "files": ["docs/SPEC.md"],
+          "detail": "SerendipityLab_制作仕様書.mdを読み込み、MVP範囲・技術スタック・生成ロジックを整理"
+        },
+        {
+          "task": "アーキテクチャ設計",
+          "files": [],
+          "detail": "9軸概念分解 + 8パターンFusion + スコアリングの3層設計を確定。LLMなしルールベースから開始する方針"
+        },
+        {
+          "task": "型定義",
+          "files": ["src/types/index.ts"],
+          "detail": "Mode / FusionPatternId / ConceptAttributes / InventionIdea など全型定義を実装"
+        },
+        {
+          "task": "概念辞書作成",
+          "files": ["src/data/concepts.json"],
+          "detail": "40概念エントリ（サウナ・株式・冷蔵庫・愛・感情・重力・AIエージェントなど）を9軸で定義"
+        },
+        {
+          "task": "概念分解エンジン実装",
+          "files": ["src/features/concept/decompose.ts"],
+          "detail": "辞書引き + カタカナ比率・感情漢字・平仮名比率によるヒューリスティックフォールバック"
+        },
+        {
+          "task": "Fusionパターン実装",
+          "files": ["src/features/fusion/patterns.ts"],
+          "detail": "機能移植・状態連動・目的転流・物理化・本人化・取引化・制約追加・反転の8パターン全実装。mode別命名語彙"
+        },
+        {
+          "task": "スコアリング実装",
+          "files": ["src/features/scoring/score.ts"],
+          "detail": "novelty（属性共通度の逆数）/ weirdness（パターン基本値＋mode補正）/ feasibility（6-weirdness）/ usefulness（problemSolved文字数）"
+        },
+        {
+          "task": "生成パイプライン実装",
+          "files": ["src/features/invention/generate.ts"],
+          "detail": "2〜3概念対応、mode別パターン優先順位、ランダム生成、3件固定出力"
+        },
+        {
+          "task": "APIルート実装",
+          "files": ["src/app/api/inventions/generate/route.ts"],
+          "detail": "POST /api/inventions/generate。バリデーション・サニタイズ・random mode対応"
+        },
+        {
+          "task": "UIコンポーネント実装",
+          "files": [
+            "src/components/ConceptInput.tsx",
+            "src/components/ModeSelector.tsx",
+            "src/components/InventionCard.tsx",
+            "src/components/ResultsPanel.tsx"
+          ],
+          "detail": "ラボ風ダークUI。スコアバー（cyan/purple/green/amber）、ローディング表示、空状態"
+        },
+        {
+          "task": "メインページ実装",
+          "files": ["src/app/page.tsx"],
+          "detail": "2〜3概念入力、4モード選択、発明ボタン、ランダムボタン、ドットグリッド背景"
+        },
+        {
+          "task": "デザインテーマ設定",
+          "files": ["src/app/globals.css"],
+          "detail": "Tailwind CSS v4 @theme拡張。lab-bg/#0a0e1a / lab-accent/#00ffaa / lab-surface など"
+        },
+        {
+          "task": "エージェント運用ルール策定",
+          "files": ["docs/AGENTS.md"],
+          "detail": "Claude/Codex/Geminiの役割分担・依頼粒度・レビュー責任を文書化"
+        },
+        {
+          "task": "テスト実装",
+          "files": [
+            "tests/decompose.test.ts",
+            "tests/score.test.ts",
+            "tests/generate.test.ts"
+          ],
+          "detail": "Vitest 13テスト全通過。辞書引き・スコア境界値・パイプライン全体・ランダム生成を検証"
+        },
+        {
+          "task": "GitHubリポジトリ設定",
+          "files": [],
+          "detail": "gh repo create serendipitylab --public。初回コミット&プッシュ完了"
+        }
+      ]
+    },
+
+    "codex": {
+      "model": "openai/codex-cli",
+      "role": "実装責任者（Phase 2以降）",
+      "contribution_ratio": 0.0,
+      "status": "未使用（Phase 2から参加予定）",
+      "tasks_planned": [
+        "フロントエンド実装の追加機能（お気に入り・履歴）",
+        "テストコードの拡充・リファクタリング",
+        "パフォーマンス最適化",
+        "SQLite保存機構の実装"
+      ]
+    },
+
+    "gemini": {
+      "model": "google/gemini-cli",
+      "role": "発想拡張・セカンドレビュー（Phase 3以降）",
+      "contribution_ratio": 0.0,
+      "status": "未使用（Phase 3から参加予定）",
+      "tasks_planned": [
+        "概念辞書の拡張案（weirdness観点）",
+        "Fusionパターンの追加案探索",
+        "テスト入力セットの大量生成",
+        "UIの代替案・改善提案"
+      ]
+    }
+  },
+
+  "summary": {
+    "phase1_by_agent": {
+      "claude": "100%",
+      "codex": "0%",
+      "gemini": "0%"
+    },
+    "note": "Phase 1 MVPはClaude単独で実装。仕様書（SPEC.md）に基づき、設計→型定義→ロジック→API→UI→テストの順で完成。Codex・GeminiはPhase 2以降に参加する設計。"
+  }
+}
