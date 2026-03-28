@@ -1,6 +1,8 @@
 'use client'
 
+import { useState } from 'react'
 import type { InventionIdea } from '@/types'
+import type { DetailExpansion } from '@/app/api/inventions/detail/route'
 
 interface ScoreBarProps {
   label: string
@@ -37,62 +39,171 @@ const PATTERN_LABEL: Record<string, string> = {
 interface InventionCardProps {
   idea: InventionIdea
   index: number
+  initialFavorited?: boolean
 }
 
-export function InventionCard({ idea, index }: InventionCardProps) {
+export function InventionCard({ idea, index, initialFavorited = false }: InventionCardProps) {
+  const [favorited, setFavorited] = useState(initialFavorited)
+  const [savingFav, setSavingFav] = useState(false)
+  const [detail, setDetail] = useState<DetailExpansion | null>(null)
+  const [loadingDetail, setLoadingDetail] = useState(false)
+  const [detailOpen, setDetailOpen] = useState(false)
+
+  async function toggleFavorite() {
+    setSavingFav(true)
+    try {
+      if (favorited) {
+        await fetch(`/api/favorites?inventionId=${idea.id}`, { method: 'DELETE' })
+        setFavorited(false)
+      } else {
+        await fetch('/api/favorites', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ invention: idea }),
+        })
+        setFavorited(true)
+      }
+    } finally {
+      setSavingFav(false)
+    }
+  }
+
+  async function loadDetail() {
+    if (detail) {
+      setDetailOpen((v) => !v)
+      return
+    }
+    setLoadingDetail(true)
+    try {
+      const res = await fetch('/api/inventions/detail', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ invention: idea }),
+      })
+      const data: DetailExpansion = await res.json()
+      setDetail(data)
+      setDetailOpen(true)
+    } finally {
+      setLoadingDetail(false)
+    }
+  }
+
   return (
     <div className="
       rounded-lg border border-lab-border bg-lab-surface
-      p-5 flex flex-col gap-4
+      flex flex-col gap-4
       hover:border-lab-accent/40 transition-colors duration-200
     ">
-      {/* Header */}
-      <div className="flex items-start justify-between gap-2">
-        <div>
-          <div className="text-xs font-mono text-lab-muted mb-1">
-            #{String(index + 1).padStart(2, '0')} {PATTERN_LABEL[idea.pattern] ?? idea.pattern}
+      {/* Card body */}
+      <div className="p-5 flex flex-col gap-4">
+        {/* Header */}
+        <div className="flex items-start justify-between gap-2">
+          <div>
+            <div className="text-xs font-mono text-lab-muted mb-1">
+              #{String(index + 1).padStart(2, '0')} {PATTERN_LABEL[idea.pattern] ?? idea.pattern}
+            </div>
+            <h3 className="text-lg font-bold font-mono text-lab-text leading-snug">
+              {idea.title}
+            </h3>
+            <p className="text-sm text-lab-accent/80 italic mt-0.5">「{idea.catchcopy}」</p>
           </div>
-          <h3 className="text-lg font-bold font-mono text-lab-text leading-snug">
-            {idea.title}
-          </h3>
-          <p className="text-sm text-lab-accent/80 italic mt-0.5">「{idea.catchcopy}」</p>
-        </div>
-      </div>
-
-      {/* Source concepts */}
-      <div className="flex gap-2 flex-wrap">
-        {idea.sourceConcepts.map((c) => (
-          <span
-            key={c}
-            className="px-2 py-0.5 rounded-full border border-lab-border text-xs font-mono text-lab-muted"
+          <button
+            onClick={toggleFavorite}
+            disabled={savingFav}
+            title={favorited ? 'お気に入りから外す' : 'お気に入りに追加'}
+            className={`text-xl transition-all duration-150 shrink-0 mt-1 ${
+              favorited ? 'text-amber-400' : 'text-lab-muted hover:text-amber-400'
+            }`}
           >
-            {c}
-          </span>
+            {favorited ? '★' : '☆'}
+          </button>
+        </div>
+
+        {/* Source concepts */}
+        <div className="flex gap-2 flex-wrap">
+          {idea.sourceConcepts.map((c) => (
+            <span
+              key={c}
+              className="px-2 py-0.5 rounded-full border border-lab-border text-xs font-mono text-lab-muted"
+            >
+              {c}
+            </span>
+          ))}
+        </div>
+
+        {/* Description */}
+        <p className="text-sm text-lab-text/80 leading-relaxed">{idea.description}</p>
+
+        {/* Problem & Target */}
+        <div className="grid grid-cols-1 gap-2 text-xs">
+          <div>
+            <span className="text-lab-accent/60 font-mono">解決する課題 / </span>
+            <span className="text-lab-text/70">{idea.problemSolved}</span>
+          </div>
+          <div>
+            <span className="text-lab-accent/60 font-mono">想定ユーザー / </span>
+            <span className="text-lab-text/70">{idea.targetUsers}</span>
+          </div>
+        </div>
+
+        {/* Scores */}
+        <div className="flex flex-col gap-1.5 pt-2 border-t border-lab-border">
+          <ScoreBar label="novelty" value={idea.scores.novelty} color="bg-cyan-400" />
+          <ScoreBar label="weird" value={idea.scores.weirdness} color="bg-purple-400" />
+          <ScoreBar label="feasible" value={idea.scores.feasibility} color="bg-emerald-400" />
+          <ScoreBar label="useful" value={idea.scores.usefulness} color="bg-amber-400" />
+        </div>
+
+        {/* Actions */}
+        <button
+          onClick={loadDetail}
+          disabled={loadingDetail}
+          className="
+            text-xs font-mono text-lab-muted border border-lab-border rounded
+            px-3 py-1.5 hover:border-lab-accent hover:text-lab-accent
+            transition-all duration-150 disabled:opacity-50 w-fit
+          "
+        >
+          {loadingDetail ? '展開中…' : detailOpen ? '▲ 詳細を閉じる' : '▼ 詳細化'}
+        </button>
+      </div>
+
+      {/* Detail expansion */}
+      {detailOpen && detail && (
+        <div className="border-t border-lab-border px-5 pb-5 flex flex-col gap-3 text-xs">
+          <DetailSection label="目的" text={detail.objective} />
+          <DetailList label="課題" items={detail.challenges} />
+          <DetailList label="必要技術" items={detail.requiredTech} />
+          <DetailList label="利用シーン" items={detail.targetScenes} />
+          <DetailSection label="ビジネスモデル" text={detail.businessModel} />
+          <DetailList label="リスク" items={detail.risks} />
+          <DetailList label="次のアクション" items={detail.nextSteps} />
+        </div>
+      )}
+    </div>
+  )
+}
+
+function DetailSection({ label, text }: { label: string; text: string }) {
+  return (
+    <div>
+      <span className="text-lab-accent/60 font-mono">{label} / </span>
+      <span className="text-lab-text/70">{text}</span>
+    </div>
+  )
+}
+
+function DetailList({ label, items }: { label: string; items: string[] }) {
+  return (
+    <div>
+      <div className="text-lab-accent/60 font-mono mb-1">{label}</div>
+      <ul className="flex flex-col gap-0.5 pl-3">
+        {items.map((item, i) => (
+          <li key={i} className="text-lab-text/70 before:content-['·'] before:mr-2 before:text-lab-muted">
+            {item}
+          </li>
         ))}
-      </div>
-
-      {/* Description */}
-      <p className="text-sm text-lab-text/80 leading-relaxed">{idea.description}</p>
-
-      {/* Problem & Target */}
-      <div className="grid grid-cols-1 gap-2 text-xs">
-        <div>
-          <span className="text-lab-accent/60 font-mono">解決する課題 / </span>
-          <span className="text-lab-text/70">{idea.problemSolved}</span>
-        </div>
-        <div>
-          <span className="text-lab-accent/60 font-mono">想定ユーザー / </span>
-          <span className="text-lab-text/70">{idea.targetUsers}</span>
-        </div>
-      </div>
-
-      {/* Scores */}
-      <div className="flex flex-col gap-1.5 pt-2 border-t border-lab-border">
-        <ScoreBar label="novelty" value={idea.scores.novelty} color="bg-cyan-400" />
-        <ScoreBar label="weird" value={idea.scores.weirdness} color="bg-purple-400" />
-        <ScoreBar label="feasible" value={idea.scores.feasibility} color="bg-emerald-400" />
-        <ScoreBar label="useful" value={idea.scores.usefulness} color="bg-amber-400" />
-      </div>
+      </ul>
     </div>
   )
 }

@@ -1,5 +1,6 @@
 import type { Concept, ConceptAttributes } from '@/types'
 import conceptsData from '@/data/concepts.json'
+import { llmDecomposeConcept } from '@/lib/llm'
 
 type ConceptDictionary = Record<string, ConceptAttributes>
 const dictionary = conceptsData as ConceptDictionary
@@ -56,6 +57,28 @@ export function decomposeConcept(raw: string): Concept {
   const trimmed = raw.trim()
   const attributes = lookupConcept(trimmed) ?? heuristicDecompose(trimmed)
   return { raw: trimmed, attributes }
+}
+
+/**
+ * Async variant: tries LLM decomposition for dictionary misses when available.
+ * Falls back to the sync rule-based version on failure.
+ */
+export async function decomposeConcept_async(raw: string): Promise<Concept> {
+  const trimmed = raw.trim()
+  const fromDict = lookupConcept(trimmed)
+  if (fromDict) return { raw: trimmed, attributes: fromDict }
+
+  const llmResult = await llmDecomposeConcept(trimmed)
+  if (llmResult) {
+    // Merge LLM result with heuristic base to fill any missing keys
+    const base = heuristicDecompose(trimmed)
+    return {
+      raw: trimmed,
+      attributes: { ...base, ...llmResult } as ConceptAttributes,
+    }
+  }
+
+  return { raw: trimmed, attributes: heuristicDecompose(trimmed) }
 }
 
 export function getConceptKeys(): string[] {

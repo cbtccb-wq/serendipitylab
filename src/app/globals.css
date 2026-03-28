@@ -9,6 +9,10 @@
   --color-lab-muted: #64748b;
 
   --font-mono: "JetBrains Mono", "Courier New", monospace;
+
+  --animate-bounce-delay-0: bounce 1s infinite;
+  --animate-bounce-delay-1: bounce 1s infinite 0.15s;
+  --animate-bounce-delay-2: bounce 1s infinite 0.3s;
 }
 
 body {
@@ -17,6 +21,70 @@ body {
   font-family: "Courier New", monospace;
 }
 
+/* Focus glow */
 .focus\:shadow-glow:focus {
   box-shadow: 0 0 0 2px rgba(0, 255, 170, 0.3);
 }
+
+/* Concept collision animation */
+@keyframes collision-flash {
+  0%   { box-shadow: 0 0 0 0 rgba(0,255,170,0); }
+  30%  { box-shadow: 0 0 30px 8px rgba(0,255,170,0.25); }
+  100% { box-shadow: 0 0 0 0 rgba(0,255,170,0); }
+}
+
+.collision-active {
+  animation: collision-flash 0.6s ease-out;
+}
+
+/* Scan line effect for cards */
+@keyframes scan {
+  0%   { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+
+/* Lab decoration: circuit dots */
+.circuit-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(0, 255, 170, 0.3);
+}
+
+/* Blinking cursor */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+.cursor-blink::after {
+  content: '▊';
+  animation: blink 1s step-end infinite;
+  color: #00ffaa;
+  margin-left: 2px;
+}
+
+/* Score bar fill animation */
+@keyframes fill-bar {
+  from { width: 0; }
+}
+
+/* Loading dots */
+@keyframes dot-bounce {
+  0%, 80%, 100% { transform: translateY(0); }
+  40%           { transform: translateY(-8px); }
+}
+
+.dot-bounce-0 { animation: dot-bounce 1.2s ease-in-out infinite; }
+.dot-bounce-1 { animation: dot-bounce 1.2s ease-in-out 0.15s infinite; }
+.dot-bounce-2 { animation: dot-bounce 1.2s ease-in-out 0.3s infinite; }
+
+/* Fade in for result cards */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.fade-up-0 { animation: fade-up 0.4s ease-out 0s both; }
+.fade-up-1 { animation: fade-up 0.4s ease-out 0.1s both; }
+.fade-up-2 { animation: fade-up 0.4s ease-out 0.2s both; }

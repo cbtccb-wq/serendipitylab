@@ -45,7 +45,9 @@ export function ResultsPanel({ inventions, isLoading }: ResultsPanelProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       {inventions.map((idea, i) => (
-        <InventionCard key={idea.id} idea={idea} index={i} />
+        <div key={idea.id} className={`fade-up-${Math.min(i, 2)}`}>
+          <InventionCard idea={idea} index={i} />
+        </div>
       ))}
     </div>
   )
