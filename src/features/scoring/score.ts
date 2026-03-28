@@ -9,6 +9,10 @@ const PATTERN_WEIRDNESS_BASE: Record<FusionPatternId, number> = {
   取引化: 3,
   制約追加: 3,
   反転: 4,
+  逆輸入: 3,
+  時間圧縮: 3,
+  寄生共生: 4,
+  拡張感覚: 4,
 }
 
 const MODE_WEIRDNESS_MOD: Record<Mode, number> = {

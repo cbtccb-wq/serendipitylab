@@ -9,6 +9,10 @@ export type FusionPatternId =
   | '取引化'
   | '制約追加'
   | '反転'
+  | '逆輸入'
+  | '時間圧縮'
+  | '寄生共生'
+  | '拡張感覚'
 
 export interface ConceptAttributes {
   物理的特徴: string[]
