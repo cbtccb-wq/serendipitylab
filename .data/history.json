@@ -1,0 +1,144 @@
+[
+  {
+    "concepts": [
+      "羅生門",
+      "競馬"
+    ],
+    "mode": "変な発明",
+    "inventions": [
+      {
+        "id": "b43jx4bf",
+        "title": "羅生門物質化競馬マシン",
+        "catchcopy": "中立を形状不明に変換する装置",
+        "sourceConcepts": [
+          "羅生門",
+          "競馬"
+        ],
+        "description": "抽象的な羅生門が持つ「中立」という感覚を、競馬の物理特性「形状不明」として可視化・触知可能にする。見えないものを形にすることで、理解と共有が可能になる。",
+        "problemSolved": "羅生門の中立が他者に伝わらない問題を物理的インターフェースで解決する",
+        "targetUsers": "羅生門を深く体験したい人・競馬の物理特性に興味がある人",
+        "scores": {
+          "novelty": 1,
+          "feasibility": 1,
+          "weirdness": 5,
+          "usefulness": 3
+        },
+        "pattern": "物理化",
+        "mode": "変な発明"
+      },
+      {
+        "id": "m419fvnu",
+        "title": "生きている競馬×羅生門工場",
+        "catchcopy": "競馬が自分の意思で羅生門の中を生きる",
+        "sourceConcepts": [
+          "競馬",
+          "羅生門"
+        ],
+        "description": "競馬を自律した生命体として扱い、羅生門という環境に放つ。競馬は見えない側面を持つという矛盾を抱えながら羅生門の世界を渡り歩く存在を想像することで、両者の本質が浮かび上がる。",
+        "problemSolved": "競馬の本質を受動的に観察するだけでなく、羅生門との相互作用を通じて能動的に理解する",
+        "targetUsers": "競馬や羅生門を新しい視点で捉えたいクリエイター・研究者",
+        "scores": {
+          "novelty": 1,
+          "feasibility": 1,
+          "weirdness": 5,
+          "usefulness": 4
+        },
+        "pattern": "本人化",
+        "mode": "変な発明"
+      },
+      {
+        "id": "awzy6jpt",
+        "title": "羅生門競馬マシン",
+        "catchcopy": "競馬に羅生門の力を宿す",
+        "sourceConcepts": [
+          "羅生門",
+          "競馬"
+        ],
+        "description": "競馬の不特定に羅生門の「未分類の用途」機能を移植した装置。羅生門が持つ本来の効果を競馬の文脈で再定義することで、これまでにない体験を生み出す。",
+        "problemSolved": "競馬における不特定の未分類の用途が不十分だった問題を解決する",
+        "targetUsers": "競馬に関わる人・羅生門を日常的に使う人",
+        "scores": {
+          "novelty": 1,
+          "feasibility": 3,
+          "weirdness": 3,
+          "usefulness": 3
+        },
+        "pattern": "機能移植",
+        "mode": "変な発明"
+      }
+    ],
+    "id": "kwh664p5",
+    "createdAt": "2026-03-28T09:41:54.107Z"
+  },
+  {
+    "concepts": [
+      "羅生門",
+      "競馬"
+    ],
+    "mode": "真面目発明",
+    "inventions": [
+      {
+        "id": "e5pgnokg",
+        "title": "羅生門競馬システム",
+        "catchcopy": "競馬に羅生門の力を宿す",
+        "sourceConcepts": [
+          "羅生門",
+          "競馬"
+        ],
+        "description": "競馬の不特定に羅生門の「未分類の用途」機能を移植した装置。羅生門が持つ本来の効果を競馬の文脈で再定義することで、これまでにない体験を生み出す。",
+        "problemSolved": "競馬における不特定の未分類の用途が不十分だった問題を解決する",
+        "targetUsers": "競馬に関わる人・羅生門を日常的に使う人",
+        "scores": {
+          "novelty": 1,
+          "feasibility": 5,
+          "weirdness": 1,
+          "usefulness": 3
+        },
+        "pattern": "機能移植",
+        "mode": "真面目発明"
+      },
+      {
+        "id": "rxnegk4b",
+        "title": "変化あり連動型羅生門装置",
+        "catchcopy": "競馬が変化ありするとき、羅生門は動き出す",
+        "sourceConcepts": [
+          "競馬",
+          "羅生門"
+        ],
+        "description": "競馬の「変化あり」という状態変化をセンシングし、自動的に羅生門の「変化あり」を引き起こすシステム。二つの現象が意外な因果関係で結ばれることで、新しい行動設計が生まれる。",
+        "problemSolved": "羅生門の変化ありタイミングを人間が判断する負荷を競馬の状態に委ねることで自動化する",
+        "targetUsers": "競馬を頻繁に経験する人・羅生門の変化ありを最適化したい人",
+        "scores": {
+          "novelty": 1,
+          "feasibility": 5,
+          "weirdness": 1,
+          "usefulness": 4
+        },
+        "pattern": "状態連動",
+        "mode": "真面目発明"
+      },
+      {
+        "id": "1wmquw9i",
+        "title": "逆説羅生門競馬プラットフォーム",
+        "catchcopy": "弱点こそが最大の武器。羅生門の矛盾を競馬で武装する",
+        "sourceConcepts": [
+          "羅生門",
+          "競馬"
+        ],
+        "description": "「羅生門は見えない側面を持つ」という羅生門の逆説・弱点を強みとして再定義し、競馬の「機能不明」を活用して実装する。欠点の中に潜む可能性を引き出すことで、既存の常識を覆す発明が生まれる。",
+        "problemSolved": "羅生門の羅生門は見えない側面を持つが障害になっていた問題を根本から反転させる",
+        "targetUsers": "羅生門の常識に違和感を感じていた人・競馬を逆用したい人",
+        "scores": {
+          "novelty": 1,
+          "feasibility": 4,
+          "weirdness": 3,
+          "usefulness": 3
+        },
+        "pattern": "反転",
+        "mode": "真面目発明"
+      }
+    ],
+    "id": "t8j2oxp4",
+    "createdAt": "2026-03-28T09:19:21.218Z"
+  }
+]
